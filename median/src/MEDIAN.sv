@@ -46,7 +46,7 @@ module MEDIAN #(parameter W = 8)(
                                     state <= DELETE;
                             end
                     DELETE :
-                        if ( k - i = 0 ) begin
+                        if ( k - i == 0 ) begin
                             state <= SORT;
                         end
                     MEDIAN :
@@ -65,7 +65,7 @@ module MEDIAN #(parameter W = 8)(
                         end else begin
                             i <= i - 1;
                             j <= 9 - (5 - i + 1);
-                            k <= 4
+                            k <= 4;
                         end
                     end
                 else if (state == MEDIAN) 
