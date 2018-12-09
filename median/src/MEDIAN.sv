@@ -7,18 +7,22 @@ module MEDIAN #(parameter W = 8)(
     output                              DSO
 );
 
-    enum logic[2:0] { INIT, STORE, SORT, DELETE, MEDIAN } state, n_state;
-
+    enum logic[2:0] { INIT, STORE, SORT, DELETE, MEDIAN } state;
     logic BYP;
-    logic [3:0]i=4;
+    logic [3:0] i=4;
     logic [4:0] j=8;
-
-    MED #(.W(W), .P(9))inst0 (.DI(DI), .DSI(DSI), .BYP(BYP), .CLK(CLK), .DO(DO));
+    initial begin
+        i=4;
+        j=8;
+    end
 
     assign DSO = (i==0 && j==0)?1:0;
     assign BYP = (j==0)? 1 : DSI;
 
-    always_ff @(posedge CLK or posedge nRST)
+    MED #(.W(W), .P(9))inst0 (.DI(DI), .DSI(DSI), .BYP(BYP), .CLK(CLK), .DO(DO));
+
+
+    always_ff @(posedge CLK or negedge nRST)
         if (!nRST)
             begin
                 state <= INIT ;
