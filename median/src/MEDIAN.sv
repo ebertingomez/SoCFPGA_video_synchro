@@ -11,6 +11,7 @@ module MEDIAN #(parameter W = 8)(
     logic BYP;
     logic [3:0] i=4;
     logic [4:0] j=8;
+    logic [4:0] k=4;
 
     assign DSO = (i==0 && j==0)?1:0;
     assign BYP = (j==0)? 1 : DSI;
@@ -22,6 +23,7 @@ module MEDIAN #(parameter W = 8)(
         if (!nRST)
             begin
                 state <= INIT ;
+                k <= 4;
                 i <= 4;
                 j <= 8;
             end
@@ -44,30 +46,33 @@ module MEDIAN #(parameter W = 8)(
                                     state <= DELETE;
                             end
                     DELETE :
-                        state <= SORT;
+                        if ( k - i = 0 ) begin
+                            state <= SORT;
+                        end
                     MEDIAN :
                         state <= INIT;
                 endcase
                 // Les sorties
                 if (state == SORT) 
                     begin: loop
-                        if ( j > 0 ) begin
-                            j <= j - 1;
-                        end 
-// else begin
-                            // i <= i - 1;
-                            // j <= 9 - (5 - i + 1);
-                       // end
+                        if ( j > 0 ) 
+                            j <= j - 1; 
                     end
-		else if (state == DELETE)
-		    begin
-        		i <= i - 1;
-			j <= 9 - (5 - i + 1);
-		    end
+                else if (state == DELETE)
+                    begin
+                        if ( k - i > 0 ) begin
+                            k <= k - 1;
+                        end else begin
+                            i <= i - 1;
+                            j <= 9 - (5 - i + 1);
+                            k <= 4
+                        end
+                    end
                 else if (state == MEDIAN) 
                     begin
                         i <= 4;
                         j <= 8;
+                        k <= 4;
                     end
             end
 endmodule
