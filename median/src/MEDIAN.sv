@@ -9,9 +9,9 @@ module MEDIAN #(parameter W = 8)(
 
     enum logic[2:0] { INIT, STORE, SORT, DELETE, MEDIAN } state;
     logic BYP;
-    logic [3:0] i=4;
-    logic [4:0] j=8;
-    logic [4:0] k=4;
+    logic [3:0] i;
+    logic [4:0] j;
+    logic [4:0] k;
 
     assign DSO = (i==0 && j==0)?1:0;
     assign BYP = (j==0)? 1 : DSI;
