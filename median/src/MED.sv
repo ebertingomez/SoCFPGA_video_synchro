@@ -11,7 +11,7 @@ module MED #(parameter W = 8, parameter P = 9)(
 
     assign DO = R[P - 1];
 
-    MCE inst0 (.A(DO), .B( R[P - 2] ), .MIN(min), .MAX(max));
+    MCE #(.W(W))inst0 (.A(DO), .B( R[P - 2] ), .MIN(min), .MAX(max));
 
     always_ff @(posedge CLK)
     begin
