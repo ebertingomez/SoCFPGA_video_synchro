@@ -8,6 +8,9 @@ module MED #(parameter W = 8, parameter P = 9)(
 
     logic unsigned [ W-1 : 0] R [P - 1 : 0];
     logic unsigned [ W-1 : 0] min, max;
+    wire unsigned [ W-1 : 0] din;
+
+    assign din = (DSI) ? DI : min;
 
     assign DO = R[P - 1];
 
@@ -19,9 +22,7 @@ module MED #(parameter W = 8, parameter P = 9)(
         for (int i = P - 2; i > 0; i--) begin
             R[i] <= R[i-1];
         end
-        if (DSI) begin
-            R[0] <= (DSI) ? DI : min;
-        end
+        R[0] <= din;
     end
 
 endmodule
