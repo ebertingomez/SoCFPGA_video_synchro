@@ -50,7 +50,7 @@ module MEDIAN #(parameter W = 8)(
                 endcase
                 // Les sorties
                 if (state == SORT) 
-                    begin
+                    begin: loop
                         if ( j > 0 ) begin
                             j <= j - 1;
                         end else begin
