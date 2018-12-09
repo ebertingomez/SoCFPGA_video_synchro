@@ -11,10 +11,6 @@ module MEDIAN #(parameter W = 8)(
     logic BYP;
     logic [3:0] i=4;
     logic [4:0] j=8;
-    initial begin
-        i=4;
-        j=8;
-    end
 
     assign DSO = (i==0 && j==0)?1:0;
     assign BYP = (j==0)? 1 : DSI;
@@ -57,11 +53,17 @@ module MEDIAN #(parameter W = 8)(
                     begin: loop
                         if ( j > 0 ) begin
                             j <= j - 1;
-                        end else begin
-                            i <= i - 1;
-                            j <= 9 - (5 - i + 1);
-                        end
+                        end 
+// else begin
+                            // i <= i - 1;
+                            // j <= 9 - (5 - i + 1);
+                       // end
                     end
+		else if (state == DELETE)
+		    begin
+        		i <= i - 1;
+			j <= 9 - (5 - i + 1);
+		    end
                 else if (state == MEDIAN) 
                     begin
                         i <= 4;
