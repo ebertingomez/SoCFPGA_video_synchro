@@ -16,8 +16,8 @@ module wb_bram #(parameter mem_adr_width = 11) (
 
       // Lecture
       always_ff @(posedge wb_s.clk)
-            if ( CTI != 0 ) begin
-                  case(CTI)
+            if ( wb_s.cti != 0 ) begin
+                  case(wb_s.cti)
                         3'b001: begin 
                                     ack_read <= 1;
                               end
