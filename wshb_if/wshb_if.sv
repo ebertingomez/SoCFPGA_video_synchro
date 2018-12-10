@@ -8,10 +8,10 @@
 //  Interface definition defines 2 parameters :
 //    TB_MASTER : the master modport is for a virtual VM model
 //    TB_SLAVE  : the slave  modport is for a virtual VM model
-// The 4 modports (master, slave, tb_master, tb_slave) cannot be defined alltogether. Even
+// The 4 modports (master, slave, tb_master, tb_slave) cannot be defined altogether. Even
 // if only a couple of them (master, tb_slave) or (master, slave) , or (tb_master, slave)...
 // are used during simulation. During elaboration phase, Modelsim complains about conflicts
-// beetween "continuous assignments" (in the modules) and "procedural" (testbench).
+// between "continuous assignments" (in the modules) and "procedural" (testbench).
 // We use parameters, in order to restrict the interface to the following cases :
 //  (master, slave)
 //  (master, slave,tb_master)

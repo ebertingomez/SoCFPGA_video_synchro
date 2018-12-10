@@ -10,7 +10,16 @@ module wb_bram #(parameter mem_adr_width = 11) (
       wshb_if.slave wb_s
       );
       // a vous de jouer a partir d'ici
+      logic tmp_ack;
+      // Ecriture
+      assign wb_s.ack = (wb_s.stb && wb_s.we && wb_s.cyc) ? 1 : tmp_ack;
 
+      // Lecture
+      always_ff @(posedge wb_s.clk)
+      begin
+            tmp_ack <= (wb_s.stb && ~wb_s.we && wb_s.cyc);
+      end
+            
 
-      endmodule
+endmodule
 
