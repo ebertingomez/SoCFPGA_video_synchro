@@ -12,8 +12,8 @@ module wb_bram #(parameter mem_adr_width = 11) (
       // a vous de jouer a partir d'ici
       logic [3:0][7:0] memory [0: 2**mem_adr_width - 1];
       logic ack_read;
-      logic [31:0] address;
-      logic i;
+      logic [mem_adr_width -1 : 0] address;
+      logic [mem_adr_width -1 : 0] i;
 
       assign address = wb_s.adr[mem_adr_width+1:2] + i;
 
@@ -31,7 +31,7 @@ module wb_bram #(parameter mem_adr_width = 11) (
                         4'b1100: memory[address][3:2] <= wb_s.dat_ms[31:16];
                         4'b1111: memory[address] <= wb_s.dat_ms;
                   endcase
-            else if (wb_s.stb && ~wb_s.we && ~wb_s.ack)
+            else if (wb_s.stb && ~wb_s.we)
                   case(wb_s.sel)
                         4'b0001: wb_s.dat_sm <= {24'b0,memory[address][0]};
                         4'b0010: wb_s.dat_sm <= {16'b0,memory[address][1],8'b0};
@@ -47,14 +47,17 @@ module wb_bram #(parameter mem_adr_width = 11) (
                         3'b001: ack_read <= 1'b1;
                         3'b010: begin
                               ack_read <= 1'b1;
-                              i <= i + 1;
+                              i <= 1;
                         end 
                         3'b111: begin
                               ack_read <= 1'b0;
                               i <= 0;
                         end 
                   endcase
-            else ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
+            else begin 
+			ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
+			i <= 0;
+		end
       end
       
 endmodule
