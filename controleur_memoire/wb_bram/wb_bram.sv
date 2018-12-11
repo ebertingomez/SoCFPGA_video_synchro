@@ -19,8 +19,15 @@ module wb_bram #(parameter mem_adr_width = 11) (
 
       assign wb_s.ack = (wb_s.stb && wb_s.we) | ack_read;
 
-      always_ff @(posedge wb_s.clk)
+      always_ff @(posedge wb_s.clk or posedge wb_s.rst)
       begin
+            if (wb_s.rst)
+            begin
+                  i <= 0
+                  memory <= 0;
+                  address <= 0;
+                  ack_read <= 0;
+            end
             if ( wb_s.stb && wb_s.we )
                   case(wb_s.sel)
                         4'b0001: memory[address][0] <= wb_s.dat_ms[7:0];
@@ -56,7 +63,6 @@ module wb_bram #(parameter mem_adr_width = 11) (
                   endcase
             else begin 
 			ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
-			i <= 0;
 		end
       end
       
