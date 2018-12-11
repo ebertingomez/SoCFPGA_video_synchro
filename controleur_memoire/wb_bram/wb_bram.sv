@@ -20,23 +20,23 @@ module wb_bram #(parameter mem_adr_width = 11) (
       begin
             if ( wb_s.stb && wb_s.we )
                   case(wb_s.sel)
-                        4'b0001: memory[wb_s.adr[mem_adr_width+1:2]] <= {24'b0,wb_s.sm[7:0]};
-                        4'b0010: memory[wb_s.adr[mem_adr_width+1:2]] <= {16'b0,wb_s.sm[15:8],8'b0};
-                        4'b0100: memory[wb_s.adr[mem_adr_width+1:2]] <= {8'b0,wb_s.sm[23:9],16'b0};
-                        4'b1000: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.sm[31:24],24'b0};
-                        4'b0011: memory[wb_s.adr[mem_adr_width+1:2]] <= {16'b0,wb_s.sm[15:0]};
-                        4'b1100: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.sm[31:16],16'b0};
-                        4'b1111: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.sm};
+                        4'b0001: memory[wb_s.adr[mem_adr_width+1:2]] <= {24'b0,wb_s.dat_ms[7:0]};
+                        4'b0010: memory[wb_s.adr[mem_adr_width+1:2]] <= {16'b0,wb_s.dat_ms[15:8],8'b0};
+                        4'b0100: memory[wb_s.adr[mem_adr_width+1:2]] <= {8'b0,wb_s.dat_ms[23:9],16'b0};
+                        4'b1000: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.dat_ms[31:24],24'b0};
+                        4'b0011: memory[wb_s.adr[mem_adr_width+1:2]] <= {16'b0,wb_s.dat_ms[15:0]};
+                        4'b1100: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.dat_ms[31:16],16'b0};
+                        4'b1111: memory[wb_s.adr[mem_adr_width+1:2]] <= {wb_s.dat_ms};
                   endcase
-            else if (wb_s.stb && wb_s.we && ~wb_s.ack)
+            else if (wb_s.stb && ~wb_s.we && ~wb_s.ack)
                   case(wb_s.sel)
-                        4'b0001: wb_s.sm <= {24'b0,memory[wb_s.adr[mem_adr_width+1:2]][0]};
-                        4'b0010: wb_s.sm <= {16'b0,memory[wb_s.adr[mem_adr_width+1:2]][1],8'b0};
-                        4'b0100: wb_s.sm <= {8'b0,memory[wb_s.adr[mem_adr_width+1:2]][2],16'b0};
-                        4'b1000: wb_s.sm <= {memory[wb_s.adr[mem_adr_width+1:2]][3],24'b0};
-                        4'b0011: wb_s.sm <= {16'b0,memory[wb_s.adr[mem_adr_width+1:2]][1:0]};
-                        4'b1100: wb_s.sm <= {memory[wb_s.adr[mem_adr_width+1:2]][3:2],16'b0};
-                        4'b1111: wb_s.sm <= {memory[wb_s.adr[mem_adr_width+1:2]][0]};
+                        4'b0001: wb_s.dat_sm <= {24'b0,memory[wb_s.adr[mem_adr_width+1:2]][0]};
+                        4'b0010: wb_s.dat_sm <= {16'b0,memory[wb_s.adr[mem_adr_width+1:2]][1],8'b0};
+                        4'b0100: wb_s.dat_sm <= {8'b0,memory[wb_s.adr[mem_adr_width+1:2]][2],16'b0};
+                        4'b1000: wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]][3],24'b0};
+                        4'b0011: wb_s.dat_sm <= {16'b0,memory[wb_s.adr[mem_adr_width+1:2]][1:0]};
+                        4'b1100: wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]][3:2],16'b0};
+                        4'b1111: wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]]};
                   endcase
 
             if ( wb_s.cti != 0 && wb_s.stb && ~wb_s.we)
