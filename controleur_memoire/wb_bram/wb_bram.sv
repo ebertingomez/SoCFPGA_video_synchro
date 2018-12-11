@@ -14,7 +14,7 @@ module wb_bram #(parameter mem_adr_width = 11) (
       // Ecriture
       assign wb_s.ack = (wb_s.stb && wb_s.we && wb_s.cyc) ? 1 : tmp_ack;
 
-      // Lecture
+      // Lecture 
       always_ff @(posedge wb_s.clk)
       begin
             tmp_ack <= (wb_s.stb && ~wb_s.we && wb_s.cyc);
