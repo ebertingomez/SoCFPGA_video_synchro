@@ -13,8 +13,9 @@ module wb_bram #(parameter mem_adr_width = 11) (
       logic [3:0][7:0] memory [0: 2**mem_adr_width - 1];
       logic ack_read;
       logic [31:0] address;
+      logic i;
 
-      assign address = (wb_s.cti == 2) ?  address : wb_s.adr[mem_adr_width+1:2] ;
+      assign address = wb_s.adr[mem_adr_width+1:2] + i;
 
       assign wb_s.ack = (wb_s.stb && wb_s.we) | ack_read;
 
@@ -46,10 +47,12 @@ module wb_bram #(parameter mem_adr_width = 11) (
                         3'b001: ack_read <= 1'b1;
                         3'b010: begin
                               ack_read <= 1'b1;
-                              address <= address + 1;
+                              i <= i + 1;
                         end 
-
-                        3'b111: ack_read <= 1'b0;
+                        3'b111: begin
+                              ack_read <= 1'b0;
+                              i <= 0;
+                        end 
                   endcase
             else ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
       end
