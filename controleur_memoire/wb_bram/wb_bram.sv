@@ -55,12 +55,13 @@ module wb_bram #(parameter mem_adr_width = 11) (
                               i <= 1;
                         end 
                         3'b111: begin
-                              ack_read <= 1'b0;
+                              ack_read <= (~ack_read) ? 1'b1 : 1'b0;
                               i <= 0;
                         end 
                   endcase
             else begin 
 			ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
+			i <= 0;
 		end
       end
       
