@@ -23,9 +23,7 @@ module wb_bram #(parameter mem_adr_width = 11) (
       begin
             if (wb_s.rst)
             begin
-                  i <= 0
-                  memory <= 0;
-                  address <= 0;
+                  i <= 0;
                   ack_read <= 0;
             end
             if ( wb_s.stb && wb_s.we )
