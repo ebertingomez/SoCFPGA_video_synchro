@@ -28,6 +28,7 @@ module wb_bram #(parameter mem_adr_width = 11) (
                         4'b1111: memory[wb_s.adr[mem_adr_width+1:2]] <= wb_s.dat_ms;
                   endcase
             else if (wb_s.stb && ~wb_s.we && ~wb_s.ack)
+<<<<<<< HEAD
                   case(wb_s.sel)
                         4'b0001: wb_s.dat_sm <= {24'b0,memory[wb_s.adr[mem_adr_width+1:2]][0]};
                         4'b0010: wb_s.dat_sm <= {16'b0,memory[wb_s.adr[mem_adr_width+1:2]][1],8'b0};
@@ -37,6 +38,9 @@ module wb_bram #(parameter mem_adr_width = 11) (
                         4'b1100: wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]][3:2],16'b0};
                         4'b1111: wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]]};
                   endcase
+=======
+                  wb_s.dat_sm <= {memory[wb_s.adr[mem_adr_width+1:2]]};
+>>>>>>> slave_wishbone
 
             ack_read <= (ack_read) ? 0 : (wb_s.stb && ~wb_s.we);
       end
