@@ -75,7 +75,7 @@ assign wshb_if_sdram.bte = '0 ;
 //--------------------------
 
 `ifdef SIMULATION
-  localparam hcmpt=10 ;
+  localparam hcmpt=9 ;
 `else
   localparam hcmpt=26 ;
 `endif
