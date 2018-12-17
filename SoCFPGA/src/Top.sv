@@ -74,6 +74,25 @@ assign wshb_if_sdram.bte = '0 ;
 //------- Code Eleves ------
 //--------------------------
 
+`ifdef SIMULATION
+  localparam hcmpt=10 ;
+`else
+  localparam hcmpt=26 ;
+`endif
+
+assign LED[0] = KEY[0];
+logic [26:0] counter;
+assign LED[1] = counter[hcmpt];
+always_ff @(posedge sys_clk or posedge sys_rst)
+begin
+    if ( sys_rst ) begin
+        counter <= 0;
+    end else begin
+        counter <= counter + 1;
+        
+    end
+
+end
 
 
 endmodule
