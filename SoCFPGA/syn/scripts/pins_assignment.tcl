@@ -35,3 +35,32 @@ set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "AS OUTPUT DRIVING 
 ###################################################
 ### PLACEZ ICI VOS DEFINITIONS
 ##################################################
+
+## Clock Mapping
+set_location_assignment PIN_V11 -to FPGA_CLK1_50 -comment "Matching PIN - CLOCK_50MHz"
+
+## Switches Mapping
+set_location_assignment PIN_Y24 -to SW[0] -comment "Matching PIN - SW_0"
+set_location_assignment PIN_W24 -to SW[1] -comment "Matching PIN - SW_1"
+set_location_assignment PIN_W21 -to SW[2] -comment "Matching PIN - SW_2"
+set_location_assignment PIN_W20 -to SW[3] -comment "Matching PIN - SW_3"
+
+## Key button Mapping 
+set_location_assignment PIN_AH17 -to KEY[0] -comment "Matching PIN - KEY_0"
+set_location_assignment PIN_AH16 -to KEY[1] -comment "Matching PIN - KEY_1"
+
+## LED Mapping 
+set_location_assignment PIN_W15 -to LED[0] -comment "Matching PIN - LED_0"
+set_location_assignment PIN_AA24 -to LED[1] -comment "Matching PIN - LED_1"
+set_location_assignment PIN_V16 -to LED[2] -comment "Matching PIN - LED_2"
+set_location_assignment PIN_V15 -to LED[3] -comment "Matching PIN - LED_3"
+set_location_assignment PIN_AF26 -to LED[4] -comment "Matching PIN - LED_4"
+set_location_assignment PIN_AE26 -to LED[5] -comment "Matching PIN - LED_5"
+set_location_assignment PIN_Y16 -to LED[6] -comment "Matching PIN - LED_6"
+set_location_assignment PIN_AA23 -to LED[7] -comment "Matching PIN - LED_7"
+
+## Electrical Standards
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FPGA_CLK1_50 -comment "Electrical Standard  to CLOCK_50MHz"
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW -comment "Electrical Standard  to Switches"
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY -comment "Electrical Standard  to buttons"
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED -comment "Electrical Standard  to LEDs"

@@ -74,36 +74,43 @@ assign wshb_if_sdram.bte = '0 ;
 //------- Code Eleves ------
 //--------------------------
 
+// Set clock frequency for simulation and synthesis
 `ifdef SIMULATION
   localparam hcmpt=9 ;
 `else
   localparam hcmpt=26 ;
 `endif
 
+
 assign LED[0] = KEY[0];
+// Counter for LED 1
 logic [26:0] counter;
 assign LED[1] = counter[hcmpt];
 
+// Pixel reset
 logic [1:0] Q;
 assign pixel_rst = Q[1];
 
+// Counter for LED 2
 logic [26:0] counterLCD;
 assign LED[2] = counterLCD[hcmpt];
 
+// Counter for LED 1
 always_ff @(posedge sys_clk or posedge sys_rst)
 begin
     counter <= ( sys_rst ) ? 0 : counter + 1; 
 end
 
+// Pixel reset
 always_ff @(posedge pixel_clk or posedge sys_rst)
 begin
     Q <= ( sys_rst ) ? 2'b11 :Q << 1;
 end
 
+// Counter for LED 2
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
     counterLCD <= ( pixel_rst ) ? 0 : counterLCD + 1; 
-
 end
 
 endmodule
