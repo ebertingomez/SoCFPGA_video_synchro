@@ -89,6 +89,7 @@ assign LED[1] = counter[hcmpt];
 
 // Pixel reset
 logic [1:0] Q;
+wire pixel_rst;
 assign pixel_rst = Q[1];
 
 // Counter for LED 2
