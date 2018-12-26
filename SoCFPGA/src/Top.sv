@@ -83,16 +83,27 @@ assign wshb_if_sdram.bte = '0 ;
 assign LED[0] = KEY[0];
 logic [26:0] counter;
 assign LED[1] = counter[hcmpt];
+
+logic [1:0] Q;
+assign pixel_rst = Q[1];
+
+logic [26:0] counterLCD;
+assign LED[2] = counterLCD[hcmpt];
+
 always_ff @(posedge sys_clk or posedge sys_rst)
 begin
-    if ( sys_rst ) begin
-        counter <= 0;
-    end else begin
-        counter <= counter + 1;
-        
-    end
-
+    counter <= ( sys_rst ) ? 0 : counter + 1; 
 end
 
+always_ff @(posedge pixel_clk or posedge sys_rst)
+begin
+    Q <= ( sys_rst ) ? 2'b11 :Q << 1;
+end
+
+always_ff @(posedge pixel_clk or posedge pixel_rst)
+begin
+    counterLCD <= ( pixel_rst ) ? 0 : counterLCD + 1; 
+
+end
 
 endmodule
