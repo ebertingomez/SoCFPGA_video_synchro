@@ -94,7 +94,7 @@ assign pixel_rst = Q[1];
 
 // Counter for LED 2
 logic [26:0] counterLCD;
-assign LED[2] = counterLCD[hcmpt];
+assign LED[2] = counterLCD[hcmpt-2];
 
 // Counter for LED 1
 always_ff @(posedge sys_clk or posedge sys_rst)
