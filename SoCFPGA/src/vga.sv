@@ -4,7 +4,7 @@ module vga #(parameter HDISP = 800, parameter VDISP = 480)(
     // External Signals
     input   wire        pixel_clk,
     input   wire        pixel_rst,
-    // Signals from the Interface
+    // Signals from the Interface Video
     video_if.master     video_ifm
 );
 
