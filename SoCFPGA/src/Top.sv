@@ -7,7 +7,7 @@ module Top #(parameter HDISP = 800, parameter VDISP = 480)(
 	output logic [7:0]	LED,
 	input  wire	 [3:0]	SW,
     // Les signaux du support matériel son regroupés dans une interface
-    hws_if.master       hws_ifm
+    hws_if.master       hws_ifm,
     // Signals from the Interface Video
     video_if.master     video_ifm
 );
@@ -78,15 +78,15 @@ assign wshb_if_sdram.bte = '0 ;
 
 // Set clock frequency for simulation and synthesis
 `ifdef SIMULATION
-  localparam hcmpt=9 ;
+  localparam hcmpt = 9 ;
 `else
-  localparam hcmpt=26 ;
+  localparam hcmpt = 26 ;
 `endif
 
 
 assign LED[0] = KEY[0];
 // Counter for LED 1
-logic [26:0] counter;
+logic [hcmpt:0] counter;
 assign LED[1] = counter[hcmpt];
 
 // Pixel reset
@@ -95,7 +95,7 @@ wire pixel_rst;
 assign pixel_rst = Q[1];
 
 // Counter for LED 2
-logic [26:0] counterLCD;
+logic [hcmpt-2:0] counterLCD;
 assign LED[2] = counterLCD[hcmpt-2];
 
 // Counter for LED 1

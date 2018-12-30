@@ -13,8 +13,11 @@ logic [3:0]	SW;
 // Interface vers le support matériel
 hws_if      hws_ifm();
 
+// Interface video
+video_if    video_ifm();
+
 // Instance du module Top
-Top Top0(.*) ;
+Top #(.HDISP(160), .VDISP(90)) Top0(.*) ;
 
 ///////////////////////////////
 //  Code élèves
