@@ -32,6 +32,7 @@ begin
         video_ifm.VS <= (VFP<counterLines && counterLines<VFP+VPULSE)? 0 : 1;
         video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
 
+        video_ifm.RGB <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
 
     end
 end
