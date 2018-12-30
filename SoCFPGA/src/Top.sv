@@ -114,4 +114,11 @@ begin
     counterLCD <= ( pixel_rst ) ? 0 : counterLCD + 1; 
 end
 
+// Instantiation of VGA
+vga #(.HDISP(800), .VDISP(480) ) vga_inst(
+	.pixel_clk (pixel_clk ),
+    .pixel_rst (pixel_rst )
+);
+
+
 endmodule
