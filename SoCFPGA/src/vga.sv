@@ -29,6 +29,7 @@ begin
         video_ifm.HS <= 1;
         video_ifm.VS <= 1;
         video_ifm.BLANK <= 0;
+        adder <= 0;
     end
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
