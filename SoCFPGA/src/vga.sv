@@ -31,7 +31,7 @@ begin
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : 0;
-        i               <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1 : 0 ;
+        adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1 : 0 ;
 
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 0 : 1;
         video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 0 : 1;
