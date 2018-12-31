@@ -26,7 +26,13 @@ begin
         {counterPixels,counterLines} <= 0;
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP) ? counterPixels+1 : 0;
-        counterLines    <= (counterPixels<VDISP+VFP+VPULSE+VBP) ? counterLines+1 : 0;
+
+        if ( counterPixels<VDISP+VFP+VPULSE+VBP ) begin
+            if (counterPixels==HDISP+HFP+HPULSE+HBP)
+                counterLines <= counterLines + 1;
+        end else begin
+            counterLines <= 0;
+        end
 
         video_ifm.HS    <= (HFP<counterPixels && counterPixels<HFP+HPULSE)? 0 : 1;
         video_ifm.VS    <= (VFP<counterLines && counterLines<VFP+VPULSE)? 0 : 1;
