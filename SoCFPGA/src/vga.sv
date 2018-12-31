@@ -17,6 +17,7 @@ localparam VBP      =   29;
 
 logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
+logic   adder;
 
 assign video_ifm.CLK = pixel_clk;
 
@@ -29,23 +30,14 @@ begin
         video_ifm.BLANK <= 0;
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
-
-        if ( counterLines<VDISP+VFP+VPULSE+VBP-1 ) 
-        begin
-            if (counterPixels==HDISP+HFP+HPULSE+HBP-1) begin
-                counterLines <= counterLines + 1;
-            end
-            else begin counterLines <= counterLines; end 
-        end else 
-        begin
-            counterLines <= 0;
-        end
+        counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : 0;
+        i               <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1 : 0 ;
 
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 0 : 1;
-        video_ifm.VS    <= (VFP-1<=counterLines && counterLines<VFP+VPULSE-1)? 0 : 1;
-        video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP-1) ? 0 : 1;
+        video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 0 : 1;
+        video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
 
-        video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP+1)%16==0)) ? 24'hFFFFFF : 0;
+        video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
 
     end
 end
