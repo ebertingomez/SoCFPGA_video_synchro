@@ -25,20 +25,20 @@ begin
     if ( pixel_rst ) 
         {counterPixels,counterLines} <= 0;
     else begin
-        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP) ? counterPixels+1 : 0;
+        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
 
-        if ( counterPixels<VDISP+VFP+VPULSE+VBP ) begin
-            if (counterPixels==HDISP+HFP+HPULSE+HBP)
+        if ( counterPixels<VDISP+VFP+VPULSE+VBP-1 ) begin
+            if (counterPixels==HDISP+HFP+HPULSE+HBP-1)
                 counterLines <= counterLines + 1;
         end else begin
             counterLines <= 0;
         end
 
-        video_ifm.HS    <= (HFP<counterPixels && counterPixels<HFP+HPULSE)? 0 : 1;
-        video_ifm.VS    <= (VFP<counterLines && counterLines<VFP+VPULSE)? 0 : 1;
-        video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
+        video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 0 : 1;
+        video_ifm.VS    <= (VFP-1<=counterLines && counterLines<VFP+VPULSE-1)? 0 : 1;
+        video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP-1) ? 0 : 1;
 
-        video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
+        video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP+1)%16==0)) ? 24'hFFFFFF : 0;
 
     end
 end
