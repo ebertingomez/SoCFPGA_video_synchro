@@ -24,10 +24,12 @@ assign video_ifm.CLK = pixel_clk;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
     if ( pixel_rst ) 
+    begin
         {counterPixels,counterLines} <= 0;
         video_ifm.HS <= 1;
         video_ifm.VS <= 1;
         video_ifm.BLANK <= 0;
+    end
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : 0;
