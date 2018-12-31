@@ -32,4 +32,7 @@ initial begin
     #4ms $stop;
 end
 
+// Instance du module Screen
+screen #(.mode(13),.X(160),.Y(90)) screen0(.video_ifs(video_ifm))  ;
+
 endmodule
