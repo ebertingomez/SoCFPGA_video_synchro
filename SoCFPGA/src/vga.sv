@@ -30,10 +30,11 @@ begin
     else begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : 0;
 
-        if ( counterLines<VDISP+VFP+VPULSE+VBP-1 ) begin
+        if ( counterLines<VDISP+VFP+VPULSE+VBP-1 ) 
+        begin
             if (counterPixels==HDISP+HFP+HPULSE+HBP-1)
-                counterLines <= counterLines + 1;
-        end else begin
+                counterLines <= counterLines + 1; 
+        else
             counterLines <= 0;
         end
 
