@@ -38,7 +38,7 @@ begin
 
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 0 : 1;
         video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 0 : 1;
-        video_ifm.BLANK <= (counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
+        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
 
         video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
 
