@@ -124,5 +124,4 @@ vga #(.HDISP(HDISP), .VDISP(VDISP) ) vga_inst(
     .wshb_ifm (wshb_if_sdram.master)
 );
 
-
 endmodule

@@ -27,8 +27,6 @@ logic   adder;
 assign video_ifm.CLK = pixel_clk;
 
 // Wisbone Interface signals
-assign wshb_ifm.stb  = 1'b1;
-assign wshb_ifm.cyc  = 1'b1;
 assign wshb_ifm.we   = 1'b1;
 assign wshb_ifm.adr  = '0  ;
 assign wshb_ifm.dat_ms = 32'hBABECAFE ;
@@ -59,6 +57,25 @@ begin
         // Pixels generation
         video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
 
+    end
+end
+
+// Reading process on the SDRAM
+logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
+logic [23:0]                    pixel;
+
+assign word = wshb_ifm.dat_sm[23:0];
+always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+begin
+    if ( wshb_ifm.rst ) begin
+        wshb_ifm.cyc    <= 1'b1;
+        wshb_ifm.stb    <= 1'b0;
+        wshb_ifm.adr    <= '0;
+        wshb_ifm.we    <= 1'b0;
+    end else begin
+        wshb_ifm.stb    <= 1'b1;
+        // Classic bus cycle Wishbone
+        wshb_ifm.adr <= (wshb_ifm.adr<HDISP*VDISP-1) ? wshb_ifm.adr + 4 * wshb_ifm.ack : 0 ;
     end
 end
 
