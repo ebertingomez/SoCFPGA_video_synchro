@@ -121,7 +121,7 @@ vga #(.HDISP(HDISP), .VDISP(VDISP) ) vga_inst(
 	.pixel_clk (pixel_clk ),
     .pixel_rst (pixel_rst ),
     .video_ifm (video_ifm),
-    .wshb_ifm (wshb_if_sdram.master),
+    .wshb_ifm (wshb_if_sdram.master)
 );
 
 
