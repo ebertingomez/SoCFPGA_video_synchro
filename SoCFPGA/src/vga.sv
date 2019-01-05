@@ -62,7 +62,9 @@ end
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 logic [23:0]                    pixel;
 logic 				            pre_ack;
+
 assign pixel = (wshb_ifm.ack && ~pre_ack) ? wshb_ifm.dat_sm[23:0] : pixel;
+
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
@@ -83,9 +85,9 @@ begin
                 counterSDRAM    <= counterSDRAM + wshb_ifm.ack;
             end
         end else begin
-	    if (~pre_ack && wshb_ifm.ack) begin
-            	{wshb_ifm.adr,counterSDRAM} <= 2'b00;
-	    end
+            if (wshb_ifm.ack && ~pre_ack) begin
+                    {wshb_ifm.adr,counterSDRAM} <= 2'b00;
+            end
         end
     end
 end
