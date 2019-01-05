@@ -72,17 +72,16 @@ logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 logic [23:0]                    pixel;
 logic 				            pre_ack;
 
-assign  pixel           = (wshb_ifm.ack && ~pre_ack) ? wshb_ifm.dat_sm[23:0] : pixel;
 assign  wshb_ifm.stb    = ~wfull;
+assign  wshb_ifm.we     = 1'b0;
 
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
         wshb_ifm.cyc    <= 1'b1;
-        {wshb_ifm.adr,wshb_ifm.we,counterSDRAM,pre_ack}    <= '0;
+        {wshb_ifm.adr,counterSDRAM,pre_ack}    <= '0;
     end else begin
-	    wshb_ifm.we	    <= 1'b0;
 	    pre_ack		    <= wshb_ifm.ack;
         // Classic bus cycle Wishbone
         if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP ) begin
@@ -100,7 +99,7 @@ end
 
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
-
+assign write = wshb_ifm.ack & ~pre_ack;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
     .rclk   (rclk), 
@@ -109,7 +108,7 @@ async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rempty (rempty), 
     .wclk   (wshb_ifm.clk), 
     .wdata  (wshb_ifm.dat_sm[23:0]), 
-    .write  (wshb_ifm.ack & ~pre_ack), 
+    .write  (write), 
     .wfull  (wfull),
     .walmost_full (walmost_full)
 );
