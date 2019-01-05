@@ -23,6 +23,15 @@ logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
 logic   adder;
 
+// Signals for the FIFO
+wire   rclk; 
+wire   read;
+logic  rdata;
+logic  rempty;
+wire   write;
+logic  wfull;
+logic  walmost_full;
+
 // Video Interface Clock
 assign video_ifm.CLK = pixel_clk;
 
@@ -91,13 +100,6 @@ end
 
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
-wire   rclk; 
-wire   read;
-logic  rdata;
-logic  rempty;
-wire   write;
-logic  wfull;
-logic  walmost_full;
 
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
