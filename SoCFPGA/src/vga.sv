@@ -19,14 +19,10 @@ localparam VFP      =   13;
 localparam VPULSE   =   3;
 localparam VBP      =   29;
 
-logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
-logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
-logic   adder;
-
 // Signals for the FIFO
 wire   rclk; 
 wire   read;
-logic  rdata;
+logic  [23:0] rdata;
 logic  rempty;
 wire   write;
 logic  wfull;
@@ -41,6 +37,13 @@ assign wshb_ifm.sel     = 4'b1111 ;
 assign wshb_ifm.cti     = '0 ;
 assign wshb_ifm.bte     = '0 ;
 
+// Video Controller and Reading FIFO
+logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
+logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
+logic   adder;
+
+assign video_ifm.RGB    = rdata;
+
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
     if ( pixel_rst ) 
@@ -50,26 +53,22 @@ begin
         {video_ifm.HS,video_ifm.VS} <= 2'b11;
     end
     else begin
-        // Counters evolutions
+        // Counters evolution
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
-        // Relative adder to the line number
+        // Relative adder to line number
         adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
 
-        // Temporal synchronisation signals management
+        // management of Temporal synchronisation signals 
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 1'b0 : 1'b1;
         video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 1'b0 : 1'b1;
-        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 1'b0 : 1'b1;
-
-        // Pixels generation
-        video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
+        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 1'b0 : 1'b1;        
 
     end
 end
 
 // Reading process on the SDRAM
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
-logic [23:0]                    pixel;
 logic 				            pre_ack;
 
 assign  wshb_ifm.stb    = ~wfull;
@@ -102,8 +101,8 @@ end
 assign write = wshb_ifm.ack & ~pre_ack;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
-    .rclk   (rclk), 
-    .read   (read), 
+    .rclk   (pixel_clk), 
+    .read   (video_ifm.BLANK), 
     .rdata  (rdata), 
     .rempty (rempty), 
     .wclk   (wshb_ifm.clk), 
@@ -113,7 +112,5 @@ async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .walmost_full (walmost_full)
 );
 
-
-    
 endmodule
 	
