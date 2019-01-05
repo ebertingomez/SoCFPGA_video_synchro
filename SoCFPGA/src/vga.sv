@@ -27,10 +27,10 @@ logic   adder;
 assign video_ifm.CLK = pixel_clk;
 
 // Wisbone Interface signals
-assign wshb_ifm.dat_ms = 32'hBABECAFE ;
-assign wshb_ifm.sel = 4'b1111 ;
-assign wshb_ifm.cti = '0 ;
-assign wshb_ifm.bte = '0 ;
+assign wshb_ifm.dat_ms  = 32'hBABECAFE ;
+assign wshb_ifm.sel     = 4'b1111 ;
+assign wshb_ifm.cti     = '0 ;
+assign wshb_ifm.bte     = '0 ;
 
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
@@ -69,14 +69,15 @@ begin
         wshb_ifm.cyc    <= 1'b1;
         wshb_ifm.stb    <= 1'b0;
         wshb_ifm.adr    <= '0;
-        wshb_ifm.we    <= 1'b0;
+        wshb_ifm.we     <= 1'b0;
+        counterSDRAM    <= '0;
     end else begin
 	wshb_ifm.we	<= 1'b0;
         wshb_ifm.stb    <= 1'b1;
         // Classic bus cycle Wishbone
-        wshb_ifm.adr <= (wshb_ifm.adr < HDISP*VDISP-1) ? wshb_ifm.adr + 4 * wshb_ifm.ack : 0 ;
+        wshb_ifm.adr    <= (counterSDRAM + ack <  HDISP*VDISP) ? wshb_ifm.adr + 4 * wshb_ifm.ack : 0 ;
+        counterSDRAM    <= (counterSDRAM + ack <  HDISP*VDISP) ? counterSDRAM + ack : 0 ;
     end
 end
-
     
 endmodule
