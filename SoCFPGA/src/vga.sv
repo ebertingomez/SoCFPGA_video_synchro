@@ -61,7 +61,7 @@ end
 // Reading process on the SDRAM
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 logic [23:0]                    pixel;
-
+logic 				pre_ack;
 assign pixel = wshb_ifm.dat_sm[23:0];
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
@@ -71,13 +71,16 @@ begin
         wshb_ifm.adr    <= '0;
         wshb_ifm.we     <= 1'b0;
         counterSDRAM    <= '0;
+	pre_ack		<= '0;
     end else begin
 	wshb_ifm.we	<= 1'b0;
         wshb_ifm.stb    <= 1'b1;
+	pre_ack		<= wshb_ifm.ack;
         // Classic bus cycle Wishbone
-        wshb_ifm.adr    <= (counterSDRAM + ack <  HDISP*VDISP) ? wshb_ifm.adr + 4 * wshb_ifm.ack : 0 ;
-        counterSDRAM    <= (counterSDRAM + ack <  HDISP*VDISP) ? counterSDRAM + ack : 0 ;
+        wshb_ifm.adr    <= (counterSDRAM + wshb_ifm.ack <  HDISP*VDISP  && ~pre_ack) ? wshb_ifm.adr + 4 * wshb_ifm.ack : 0 ;
+        counterSDRAM    <= (counterSDRAM + wshb_ifm.ack <  HDISP*VDISP && ~pre_ack) ? counterSDRAM + wshb_ifm.ack : 0 ;
     end
 end
     
 endmodule
+	

@@ -17,7 +17,7 @@ hws_if      hws_ifm();
 video_if    video_ifm();
 
 // Instance du module Top
-Top #(.HDISP(160), .VDISP(90)) Top0(.*) ;
+Top #(.HDISP(32), .VDISP(24)) Top0(.*) ;
 
 ///////////////////////////////
 //  Code élèves
@@ -33,6 +33,6 @@ initial begin
 end
 
 // Instance du module Screen
-screen #(.mode(13),.X(160),.Y(90)) screen0(.video_ifs(video_ifm))  ;
+screen #(.mode(13),.X(32),.Y(24)) screen0(.video_ifs(video_ifm))  ;
 
 endmodule
