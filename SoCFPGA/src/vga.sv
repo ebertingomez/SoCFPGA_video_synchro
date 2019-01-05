@@ -93,7 +93,7 @@ end
 // Instanciation of ASYNC_FIFO
 wire   rclk; 
 wire   read;
-logic  [DATA_WIDTH-1:0] rdata;
+logic  rdata;
 logic  rempty;
 wire   write;
 logic  wfull;
