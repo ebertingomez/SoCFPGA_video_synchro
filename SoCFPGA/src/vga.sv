@@ -45,12 +45,12 @@ begin
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to the line number
-        adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1 : 0 ;
+        adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
 
         // Temporal synchronisation signals management
-        video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 0 : 1;
-        video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 0 : 1;
-        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 0 : 1;
+        video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 1'b0 : 1'b1;
+        video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 1'b0 : 1'b1;
+        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 1'b0 : 1'b1;
 
         // Pixels generation
         video_ifm.RGB   <= (video_ifm.BLANK && ((counterPixels-HFP-HPULSE-HBP+1)%16==0 || (counterLines-VFP-VPULSE-VBP)%16==0)) ? 24'hFFFFFF : 0;
@@ -63,20 +63,17 @@ logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 logic [23:0]                    pixel;
 logic 				            pre_ack;
 
-assign pixel = (wshb_ifm.ack && ~pre_ack) ? wshb_ifm.dat_sm[23:0] : pixel;
+assign  pixel           = (wshb_ifm.ack && ~pre_ack) ? wshb_ifm.dat_sm[23:0] : pixel;
+assign  wshb_ifm.stb    = ~wfull;
+
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
         wshb_ifm.cyc    <= 1'b1;
-        wshb_ifm.stb    <= 1'b0;
-        wshb_ifm.adr    <= '0;
-        wshb_ifm.we     <= 1'b0;
-        counterSDRAM    <= '0;
-	    pre_ack		    <= '0;
+        {wshb_ifm.adr,wshb_ifm.we,counterSDRAM,pre_ack}    <= '0;
     end else begin
 	    wshb_ifm.we	    <= 1'b0;
-        wshb_ifm.stb    <= 1'b1;
 	    pre_ack		    <= wshb_ifm.ack;
         // Classic bus cycle Wishbone
         if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP ) begin
@@ -91,6 +88,31 @@ begin
         end
     end
 end
+
+// Writing on FIFO
+// Instanciation of ASYNC_FIFO
+wire   rclk; 
+wire   read;
+logic  [DATA_WIDTH-1:0] rdata;
+logic  rempty;
+wire   write;
+logic  wfull;
+logic  walmost_full;
+
+async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
+    .rst    (wshb_ifm.rst), 
+    .rclk   (rclk), 
+    .read   (read), 
+    .rdata  (rdata), 
+    .rempty (rempty), 
+    .wclk   (wshb_ifm.clk), 
+    .wdata  (wshb_ifm.dat_sm[23:0]), 
+    .write  (wshb_ifm.ack & ~pre_ack), 
+    .wfull  (wfull),
+    .walmost_full (walmost_full)
+);
+
+
     
 endmodule
 	
