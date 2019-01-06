@@ -42,10 +42,10 @@ logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
 logic   adder;
 
-logic old_wfull, pipe,new_wfull, is_wfull;
+logic old_wfull, pipe,new_wfull, was_wfull;
 
 assign video_ifm.RGB    = rdata;
-
+assign read		= video_ifm.BLANK;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
     if ( pixel_rst ) 
@@ -109,7 +109,7 @@ assign write = wshb_ifm.ack & ~pre_ack;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
     .rclk   (pixel_clk), 
-    .read   (video_ifm.BLANK), 
+    .read   (read), 
     .rdata  (rdata), 
     .rempty (rempty), 
     .wclk   (wshb_ifm.clk), 
