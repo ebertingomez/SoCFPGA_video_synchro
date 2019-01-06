@@ -42,6 +42,8 @@ logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
 logic   adder;
 
+logic old_wfull, pipe,new_wfull, is_wfull;
+
 assign video_ifm.RGB    = rdata;
 
 always_ff @(posedge pixel_clk or posedge pixel_rst)
@@ -49,12 +51,17 @@ begin
     if ( pixel_rst ) 
     begin
         // Initialisation of the values of all the signals
-        {counterPixels,counterLines,video_ifm.BLANK,adder} <= '0;
+        {counterPixels,counterLines,video_ifm.BLANK,adder}  <= '0;
+        {pipe,new_wfull, was_wfull}                <= '0;
         {video_ifm.HS,video_ifm.VS} <= 2'b11;
     end
     else begin
+        // Clock domain resolution
+        {new_wfull,pipe}<= {pipe,wfull};
+        was_wfull        <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
+
         // Counters evolution
-        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1) ? counterPixels+1 : '0;
+        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to line number
         adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
