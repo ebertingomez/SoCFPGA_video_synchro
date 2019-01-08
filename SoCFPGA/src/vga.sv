@@ -61,7 +61,7 @@ begin
         was_wfull        <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
 
         // Counters evolution
-        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull) ? counterPixels+1 : '0;
+        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull && rempty) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to line number
         adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
