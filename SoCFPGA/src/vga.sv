@@ -61,7 +61,7 @@ begin
         was_wfull        <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
 
         // Counters evolution
-        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull && rempty) ? counterPixels+1 : '0;
+        counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to line number
         adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
@@ -69,7 +69,7 @@ begin
         // management of Temporal synchronisation signals 
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 1'b0 : 1'b1;
         video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 1'b0 : 1'b1;
-        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP || rempty) ? 1'b0 : 1'b1;        
+        video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 1'b0 : 1'b1;        
 
     end
 end
