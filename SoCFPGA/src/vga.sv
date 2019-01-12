@@ -78,8 +78,8 @@ logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 assign  wshb_ifm.stb    = ~wfull;
 assign  wshb_ifm.we     = 1'b0;
 assign  wshb_ifm.bte    = 2'b00;
-assign  wshb_ifm.cyc    <= 1'b1;
-assign  wshb_ifm.cti    <= 3'b010;
+assign  wshb_ifm.cyc    = 1'b1;
+assign  wshb_ifm.cti    = 3'b010;
 
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
