@@ -5,7 +5,7 @@ set PROJECT_DIR  $env(PROJECT_DIR)
 set_global_assignment -name QIP_FILE           $PROJECT_DIR/ips/sys_pll/sys_pll.qip
 set_global_assignment -name SYSTEMVERILOG_FILE $PROJECT_DIR/ips/interfaces/video_if.sv
 set_global_assignment -name SYSTEMVERILOG_FILE $PROJECT_DIR/SoCFPGA/src/vga.sv
-​set_global_assignment -name SYSTEMVERILOG_FILE $PROJECT_DIR/ips/fifos/async_fifo.sv
+set_global_assignment -name SYSTEMVERILOG_FILE $PROJECT_DIR/ips/fifos/async_fifo.sv
 set_global_assignment -name SYSTEMVERILOG_FILE $PROJECT_DIR/SoCFPGA/src/Top.sv
 
 
