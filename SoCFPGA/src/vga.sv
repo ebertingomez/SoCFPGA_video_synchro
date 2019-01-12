@@ -34,8 +34,6 @@ assign video_ifm.CLK = pixel_clk;
 // Wisbone Interface signals
 assign wshb_ifm.dat_ms  = 32'hBABECAFE ;
 assign wshb_ifm.sel     = 4'b1111 ;
-assign wshb_ifm.cti     = '0 ;
-assign wshb_ifm.bte     = '0 ;
 
 // Video Controller and Reading FIFO
 logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
@@ -76,36 +74,32 @@ end
 
 // Reading process on the SDRAM
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
-logic 				            pre_ack;
 
 assign  wshb_ifm.stb    = ~wfull;
 assign  wshb_ifm.we     = 1'b0;
-
+assign  wshb_ifm.bte     = 2'b00;
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
         wshb_ifm.cyc    <= 1'b1;
-        {wshb_ifm.adr,counterSDRAM,pre_ack}    <= '0;
+        {wshb_ifm.adr,counterSDRAM}    <= '0;
+        wshb_ifm.cti    <= 3'b010;
+        
     end else begin
-	    pre_ack		    <= wshb_ifm.ack;
-        // Classic bus cycle Wishbone
+        // Burst bus cycle Wishbone
         if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP ) begin
-            if (~pre_ack) begin
-                wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
-                counterSDRAM    <= counterSDRAM + wshb_ifm.ack;
-            end
+            wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
+            counterSDRAM    <= counterSDRAM + wshb_ifm.ack;
         end else begin
-            if (wshb_ifm.ack && ~pre_ack) begin
-                    {wshb_ifm.adr,counterSDRAM} <= 2'b00;
-            end
+            {wshb_ifm.adr,counterSDRAM} <= 2'b00;
         end
     end
 end
 
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
-assign write = wshb_ifm.ack & ~pre_ack;
+assign write = wshb_ifm.ack;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
     .rclk   (pixel_clk), 
