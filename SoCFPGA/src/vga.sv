@@ -77,20 +77,21 @@ logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 
 assign  wshb_ifm.stb    = ~wfull;
 assign  wshb_ifm.we     = 1'b0;
-assign  wshb_ifm.bte     = 2'b00;
+assign  wshb_ifm.bte    = 2'b00;
+assign  wshb_ifm.cyc    <= 1'b1;
+assign  wshb_ifm.cti    <= 3'b010;
+
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
-        wshb_ifm.cyc    <= 1'b1;
         {wshb_ifm.adr,counterSDRAM}    <= '0;
-        wshb_ifm.cti    <= 3'b010;
         
     end else begin
         // Burst bus cycle Wishbone
-        if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP ) begin
-            wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
-            counterSDRAM    <= counterSDRAM + wshb_ifm.ack;
+        if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP) begin
+            wshb_ifm.adr    <= (wshb_ifm.stb) ? wshb_ifm.adr + 4 * wshb_ifm.ack : wshb_ifm.adr;
+            counterSDRAM    <= (wshb_ifm.stb) ? counterSDRAM + wshb_ifm.ack : counterSDRAM;
         end else begin
             {wshb_ifm.adr,counterSDRAM} <= 2'b00;
         end
@@ -99,7 +100,7 @@ end
 
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
-assign write = wshb_ifm.ack;
+assign write = wshb_ifm.ack & wshb_ifm.stb;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
     .rst    (wshb_ifm.rst), 
     .rclk   (pixel_clk), 
