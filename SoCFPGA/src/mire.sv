@@ -27,13 +27,13 @@ begin
         end else begin
             wshb_ifm.stb    <= 1'b1;
         end
-        
+
         if ( counter + wshb_ifm.ack <  HDISP*VDISP) begin
             wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
             counter         <= counter + wshb_ifm.ack;
             wshb_ifm.dat_ms <= 32'h00ff0000;
         end else begin
-            {wshb_ifm.adr,counterSDRAM} <= 2'b00;
+            {wshb_ifm.adr,counter} <= 2'b00;
         end
     end
 end

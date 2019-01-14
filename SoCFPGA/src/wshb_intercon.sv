@@ -8,8 +8,6 @@ module wshb_intercon (
     // This is the token
     logic mireActive;
 
-    assign mireActive           = (~wshb_ifm.cyc) ? ~mireActive : mireActive;
-
     assign wshb_ifs_vga.dat_sm  = wshb_ifm.dat_sm;
     assign wshb_ifm.dat_ms      = wshb_ifs_mire.dat_ms;
 
