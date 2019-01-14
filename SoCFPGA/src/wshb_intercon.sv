@@ -26,7 +26,6 @@ module wshb_intercon (
     begin
         if ( wshb_ifm.rst ) begin
             mireActive          <= 1'b1;
-            
         end else begin
             mireActive          <= (~wshb_ifm.cyc) ? ~mireActive : mireActive;
         end

@@ -4,7 +4,7 @@ module mire #(parameter HDISP = 800, parameter VDISP = 480)(
     wshb_if.master      wshb_ifm
 );
 
-logic [5:0] counter;
+logic [$clog2(HDISP*VDISP)-1:0] counter;
 
 assign wshb_ifm.we      = 1'b1;
 assign wshb_ifm.sel     = 4'b1111;
@@ -31,7 +31,7 @@ begin
         if ( counter + wshb_ifm.ack <  HDISP*VDISP) begin
             wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
             counter         <= counter + wshb_ifm.ack;
-            wshb_ifm.dat_ms <= 32'h00ff0000;
+            wshb_ifm.dat_ms <= (counter%16=='0) ? 32'hFFFFFF : 32'h000000 ;
         end else begin
             {wshb_ifm.adr,counter} <= 2'b00;
         end
