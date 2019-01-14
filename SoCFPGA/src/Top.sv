@@ -131,8 +131,8 @@ mire #(.HDISP(HDISP), .VDISP(VDISP) ) mire_inst(
 );
 
 wshb_intercon  wshb_intercon_inst(
-	.wshb_ifs_mire  (wshb_if_vga.slave), // Interface with the wishbone signals
-    .wshb_ifs_vga   (wshb_if_mire.slave), // Interface with the wishbone signals
+	.wshb_ifs_mire  (wshb_if_mire.slave), // Interface with the wishbone signals
+    .wshb_ifs_vga   (wshb_if_vga.slave), // Interface with the wishbone signals
     .wshb_ifm       (wshb_if_sdram.master) // Interface with the wishbone signals
 );
 

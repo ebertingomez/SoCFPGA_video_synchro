@@ -33,7 +33,7 @@ begin
             counter         <= counter + wshb_ifm.ack;
             wshb_ifm.dat_ms <= (counter%16=='0) ? 32'hFFFFFF : 32'h000000 ;
         end else begin
-            {wshb_ifm.adr,counter} <= 2'b00;
+            {wshb_ifm.adr,counter} <= '0;
         end
     end
 end
