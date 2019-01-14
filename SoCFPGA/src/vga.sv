@@ -32,10 +32,6 @@ logic  walmost_full;
 // Video Interface Clock
 assign video_ifm.CLK = pixel_clk;
 
-// Wisbone Interface signals
-assign wshb_ifm.dat_ms  = 32'hBABECAFE ;
-assign wshb_ifm.sel     = 4'b1111 ;
-
 // Video Controller and Reading FIFO
 logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
@@ -78,13 +74,15 @@ end
 
 // Reading process on the SDRAM
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
-
+// Wisbone Interface signals
+assign wshb_ifm.dat_ms  = 32'hBABECAFE ;
+assign wshb_ifm.sel     = 4'b1111 ;
 // We validate a lecture process only if the FIFO is not full
 assign  wshb_ifm.stb    = ~wfull;
 // Read-only
 assign  wshb_ifm.we     = 1'b0;
 assign  wshb_ifm.bte    = 2'b00;
-assign  wshb_ifm.cyc    = 1'b1;
+assign  wshb_ifm.cyc    = wshb_ifm.stb;
 assign  wshb_ifm.cti    = 3'b010;
 
 
