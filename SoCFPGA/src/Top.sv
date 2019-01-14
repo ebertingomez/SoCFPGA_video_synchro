@@ -118,10 +118,10 @@ end
 
 // Instantiation of VGA
 vga #(.HDISP(HDISP), .VDISP(VDISP) ) vga_inst(
-	.pixel_clk (pixel_clk ),
-    .pixel_rst (pixel_rst ),
-    .video_ifm (video_ifm),
-    .wshb_ifm (wshb_if_sdram.master)
+	.pixel_clk (pixel_clk ), // Clock for the VGA
+    .pixel_rst (pixel_rst ), // Reset 
+    .video_ifm (video_ifm), // Interface which contains all the signals for the display
+    .wshb_ifm (wshb_if_sdram.master) // Interface with the wishbone signals
 );
 
 endmodule

@@ -11,10 +11,11 @@ module vga #(parameter HDISP = 800, parameter VDISP = 480)(
 );
 
 // Local temporal parameters for the display. 
-// Horizontal parameters are in pixels and vertical ones are in lines
+// Horizontal parameters in pixels for synchronosation
 localparam HFP      =   40;
 localparam HPULSE   =   48;
 localparam HBP      =   40;
+// Vertical parameters  in lines for synchronisation
 localparam VFP      =   13;
 localparam VPULSE   =   3;
 localparam VBP      =   29;
@@ -40,25 +41,28 @@ logic  [$clog2(HDISP+HFP+HPULSE+HBP)-1:0] counterPixels;
 logic  [$clog2(VDISP+VFP+VPULSE+VBP)-1:0] counterLines;
 logic   adder;
 
+// Variables for the re-synchronisation
 logic old_wfull, pipe,new_wfull, was_wfull;
 
 assign video_ifm.RGB    = rdata;
-assign read		= video_ifm.BLANK;
+// We read the FIFO only not ignored (NOT BLANK) values
+assign read		        = video_ifm.BLANK;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
     if ( pixel_rst ) 
     begin
         // Initialisation of the values of all the signals
         {counterPixels,counterLines,video_ifm.BLANK,adder}  <= '0;
-        {pipe,new_wfull, was_wfull}                <= '0;
-        {video_ifm.HS,video_ifm.VS} <= 2'b11;
+        {pipe,new_wfull, was_wfull}                         <= '0;
+        {video_ifm.HS,video_ifm.VS}                         <= 2'b11;
     end
     else begin
         // Clock domain resolution
         {new_wfull,pipe}<= {pipe,wfull};
-        was_wfull        <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
+        was_wfull       <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
 
         // Counters evolution
+        // We count pixels only if the FIFO was full once
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to line number
@@ -75,16 +79,19 @@ end
 // Reading process on the SDRAM
 logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 
+// We validate a lecture process only if the FIFO is not full
 assign  wshb_ifm.stb    = ~wfull;
+// Read-only
 assign  wshb_ifm.we     = 1'b0;
-assign  wshb_ifm.bte     = 2'b00;
+// Rafale incremental
+assign  wshb_ifm.bte    = 2'b00;
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
-        wshb_ifm.cyc    <= 1'b1;
-        {wshb_ifm.adr,counterSDRAM}    <= '0;
-        wshb_ifm.cti    <= 3'b010;
+        wshb_ifm.cyc                    <= 1'b1;
+        {wshb_ifm.adr,counterSDRAM}     <= '0;
+        wshb_ifm.cti                    <= 3'b010;
         
     end else begin
         // Burst bus cycle Wishbone
@@ -101,15 +108,15 @@ end
 // Instanciation of ASYNC_FIFO
 assign write = wshb_ifm.ack;
 async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
-    .rst    (wshb_ifm.rst), 
-    .rclk   (pixel_clk), 
-    .read   (read), 
-    .rdata  (rdata), 
-    .rempty (rempty), 
-    .wclk   (wshb_ifm.clk), 
-    .wdata  (wshb_ifm.dat_sm[23:0]), 
-    .write  (write), 
-    .wfull  (wfull),
+    .rst    (wshb_ifm.rst),             // Reading reset
+    .rclk   (pixel_clk),                // Reading clock. The same than the pixel
+    .read   (read),                     // Read order
+    .rdata  (rdata),                    // Data read
+    .rempty (rempty),                   // Reading EMpty
+    .wclk   (wshb_ifm.clk),             // Writing clock, the same as the RAM
+    .wdata  (wshb_ifm.dat_sm[23:0]),    // Data to write is sent by the RAM
+    .write  (write),                    // Write order
+    .wfull  (wfull),                    // The FIFO is full
     .walmost_full (walmost_full)
 );
 
