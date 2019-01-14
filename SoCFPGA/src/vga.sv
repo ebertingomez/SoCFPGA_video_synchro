@@ -83,26 +83,15 @@ logic [$clog2(HDISP*VDISP)-1:0] counterSDRAM;
 assign  wshb_ifm.stb    = ~wfull;
 // Read-only
 assign  wshb_ifm.we     = 1'b0;
-<<<<<<< HEAD
-// Rafale incremental
-assign  wshb_ifm.bte    = 2'b00;
-=======
 assign  wshb_ifm.bte    = 2'b00;
 assign  wshb_ifm.cyc    = 1'b1;
 assign  wshb_ifm.cti    = 3'b010;
 
->>>>>>> c71cf097b12e6176668be3ee84161b2c09ba312b
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
-<<<<<<< HEAD
-        wshb_ifm.cyc                    <= 1'b1;
-        {wshb_ifm.adr,counterSDRAM}     <= '0;
-        wshb_ifm.cti                    <= 3'b010;
-=======
         {wshb_ifm.adr,counterSDRAM}    <= '0;
->>>>>>> c71cf097b12e6176668be3ee84161b2c09ba312b
         
     end else begin
         // Burst bus cycle Wishbone
