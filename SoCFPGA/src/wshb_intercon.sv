@@ -14,13 +14,13 @@ module wshb_intercon (
     assign wshb_ifs_mire.ack    = (mireActive)  ? wshb_ifm.ack : '0;
     assign wshb_ifs_vga.ack     = (~mireActive) ? wshb_ifm.ack : '0;
 
-    assign wshb_ifm.cyc         = (mireActive)  ? wshb_ifs_mire.cyc : wshb_ifs_mire.cyc ;
-    assign wshb_ifm.stb         = (mireActive)  ? wshb_ifs_mire.stb : wshb_ifs_mire.stb ;
-    assign wshb_ifm.we          = (mireActive)  ? wshb_ifs_mire.we  : wshb_ifs_mire.we  ;
-    assign wshb_ifm.adr         = (mireActive)  ? wshb_ifs_mire.adr : wshb_ifs_mire.adr ;
-    assign wshb_ifm.sel         = (mireActive)  ? wshb_ifs_mire.sel : wshb_ifs_mire.sel ;
-    assign wshb_ifm.cti         = (mireActive)  ? wshb_ifs_mire.cti : wshb_ifs_mire.cti ;
-    assign wshb_ifm.bte         = (mireActive)  ? wshb_ifs_mire.bte : wshb_ifs_mire.bte ;
+    assign wshb_ifm.cyc         = (mireActive)  ? wshb_ifs_mire.cyc : wshb_ifs_vga.cyc ;
+    assign wshb_ifm.stb         = (mireActive)  ? wshb_ifs_mire.stb : wshb_ifs_vga.stb ;
+    assign wshb_ifm.we          = (mireActive)  ? wshb_ifs_mire.we  : wshb_ifs_vga.we  ;
+    assign wshb_ifm.adr         = (mireActive)  ? wshb_ifs_mire.adr : wshb_ifs_vga.adr ;
+    assign wshb_ifm.sel         = (mireActive)  ? wshb_ifs_mire.sel : wshb_ifs_vga.sel ;
+    assign wshb_ifm.cti         = (mireActive)  ? wshb_ifs_mire.cti : wshb_ifs_vga.cti ;
+    assign wshb_ifm.bte         = (mireActive)  ? wshb_ifs_mire.bte : wshb_ifs_vga.bte ;
 
     always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
     begin
