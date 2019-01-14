@@ -22,6 +22,16 @@ module wshb_intercon (
     assign wshb_ifm.cti         = (mireActive)  ? wshb_ifs_mire.cti : wshb_ifs_vga.cti ;
     assign wshb_ifm.bte         = (mireActive)  ? wshb_ifs_mire.bte : wshb_ifs_vga.bte ;
 
+    always_comb
+    begin
+        if ( wshb_ifm.rst ) begin
+            mireActive          = 1'b1;
+        end else begin
+            mireActive          = (~wshb_ifm.cyc) ? ~mireActive : mireActive;
+        end
+    end
+
+    /*
     always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
     begin
         if ( wshb_ifm.rst ) begin
@@ -30,7 +40,7 @@ module wshb_intercon (
             mireActive          <= (~wshb_ifm.cyc) ? ~mireActive : mireActive;
         end
     end
-
+    */
 
 
 
