@@ -20,8 +20,7 @@ begin
         wshb_ifm.stb <= 1'b1;
     end else begin
         // Burst bus cycle Wishbone
-        wshb_ifm.dat_ms <= 32'h00ff0000;
-
+        
         if ( wshb_ifm.stb ) begin
             wshb_ifm.stb    <= ((counter+1) % 64 == '0) ? 1'b0 : 1'b1;
         end else begin
