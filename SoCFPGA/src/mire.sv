@@ -30,7 +30,7 @@ begin
         if ( counter + wshb_ifm.ack <  HDISP*VDISP) begin
             wshb_ifm.adr    <= wshb_ifm.adr + 4 * wshb_ifm.ack;
             counter         <= counter + wshb_ifm.ack;
-            wshb_ifm.dat_ms <= (counter%16=='0) ? 32'hFFFFFF : 32'h000000 ;
+            wshb_ifm.dat_ms <= (counter%4=='0) ? 32'hFFFFFF : 32'h000000 ;
         end else begin
             {wshb_ifm.adr,counter} <= '0;
         end
