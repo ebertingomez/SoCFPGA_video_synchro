@@ -23,7 +23,7 @@ module wshb_intercon (
     assign wshb_ifm.bte         = (mireActive)  ? wshb_ifs_mire.bte : wshb_ifs_vga.bte ;
 
     
-    always_comb
+    always @(*)
     begin
         if ( wshb_ifm.rst ) begin
             mireActive          = 1'b1;
