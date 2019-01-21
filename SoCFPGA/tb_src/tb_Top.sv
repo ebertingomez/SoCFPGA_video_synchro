@@ -29,7 +29,7 @@ initial begin
     KEY[0] = 1;
     #128ns KEY[0] = 0;
     #128ns KEY[0] = 1;
-    #8ms $stop;
+    #4ms $stop;
 end
 
 // Instance du module Screen
