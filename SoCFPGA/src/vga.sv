@@ -86,7 +86,14 @@ assign  wshb_ifm.bte    = 2'b00;
 assign  wshb_ifm.cyc    = wshb_ifm.stb;
 assign  wshb_ifm.cti    = 3'b010;
 
+// CYC management
+always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+begin
+    if ( wshb_ifm.rst ) wshb_ifm.cyc    <= '0;
+    else 
+end wshb_ifm.cyc <= (walmost_full) ? 1'b0 : 1'b1 ;
 
+// Reading process on the SDRAM
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
@@ -104,10 +111,11 @@ begin
     end
 end
 
+
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
 assign write = wshb_ifm.ack & wshb_ifm.stb;
-async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
+async_fifo #(.DATA_WIDTH(24), .ALMOST_FULL_THRESHOLD(224)) async_fifo_inst(
     .rst    (wshb_ifm.rst),             // Reading reset
     .rclk   (pixel_clk),                // Reading clock. The same than the pixel
     .read   (read),                     // Read order
