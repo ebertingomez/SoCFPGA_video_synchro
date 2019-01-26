@@ -88,7 +88,7 @@ assign  wshb_ifm.cti    = 3'b010;
 // CYC management
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
-    if ( wshb_ifm.rst ) wshb_ifm.cyc    <= '1;
+    if ( wshb_ifm.rst ) wshb_ifm.cyc    <= 1'b1;
     else wshb_ifm.cyc <= (walmost_full) ? 1'b0 : 1'b1 ;
 end 
 
