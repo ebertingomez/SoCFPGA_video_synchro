@@ -90,8 +90,8 @@ assign  wshb_ifm.cti    = 3'b010;
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) wshb_ifm.cyc    <= '0;
-    else 
-end wshb_ifm.cyc <= (walmost_full) ? 1'b0 : 1'b1 ;
+    else wshb_ifm.cyc <= (walmost_full) ? 1'b0 : 1'b1 ;
+end 
 
 // Reading process on the SDRAM
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
