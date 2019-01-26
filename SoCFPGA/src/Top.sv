@@ -33,6 +33,8 @@ sys_pll  sys_pll_inst(
 //=============================
 //  Les bus Wishbone internes
 //=============================
+wshb_if #( .DATA_BYTES(4)) wshb_if_mire  (sys_clk, sys_rst);
+wshb_if #( .DATA_BYTES(4)) wshb_if_vga  (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_sdram  (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_stream (sys_clk, sys_rst);
 
@@ -87,7 +89,7 @@ assign wshb_if_stream.rty =  1'b0 ;
 assign LED[0] = KEY[0];
 // Counter for LED 1
 logic [hcmpt:0] counter;
-assign LED[1] = counter[hcmpt];
+assign LED[1]   = counter[hcmpt];
 
 // Pixel reset
 logic [1:0] Q;
@@ -96,32 +98,43 @@ assign pixel_rst = Q[1];
 
 // Counter for LED 2
 logic [hcmpt-2:0] counterLCD;
-assign LED[2] = counterLCD[hcmpt-2];
+assign LED[2]   = counterLCD[hcmpt-2];
 
 // Counter for LED 1
 always_ff @(posedge sys_clk or posedge sys_rst)
 begin
-    counter <= ( sys_rst ) ? 0 : counter + 1; 
+    counter     <= ( sys_rst ) ? 0 : counter + 1; 
 end
 
 // Pixel reset
 always_ff @(posedge pixel_clk or posedge sys_rst)
 begin
-    Q <= ( sys_rst ) ? 2'b11 :Q << 1;
+    Q           <= ( sys_rst ) ? 2'b11 :Q << 1;
 end
 
 // Counter for LED 2
 always_ff @(posedge pixel_clk or posedge pixel_rst)
 begin
-    counterLCD <= ( pixel_rst ) ? 0 : counterLCD + 1; 
+    counterLCD  <= ( pixel_rst ) ? 0 : counterLCD + 1; 
 end
 
 // Instantiation of VGA
 vga #(.HDISP(HDISP), .VDISP(VDISP) ) vga_inst(
-	.pixel_clk (pixel_clk ), // Clock for the VGA
-    .pixel_rst (pixel_rst ), // Reset 
-    .video_ifm (video_ifm), // Interface which contains all the signals for the display
-    .wshb_ifm (wshb_if_sdram.master) // Interface with the wishbone signals
+	.pixel_clk      (pixel_clk ), // Clock for the VGA
+    .pixel_rst      (pixel_rst ), // Reset 
+    .video_ifm      (video_ifm), // Interface which contains all the signals for the display
+    .wshb_ifm       (wshb_if_vga.master) // Interface with the wishbone signals
 );
+
+mire #(.HDISP(HDISP), .VDISP(VDISP) ) mire_inst(
+    .wshb_ifm       (wshb_if_mire.master) // Interface with the wishbone signals
+);
+
+wshb_intercon  wshb_intercon_inst(
+	.wshb_ifs_mire  (wshb_if_mire.slave), // Interface with the wishbone signals
+    .wshb_ifs_vga   (wshb_if_vga.slave), // Interface with the wishbone signals
+    .wshb_ifm       (wshb_if_sdram.master) // Interface with the wishbone signals
+);
+
 
 endmodule
