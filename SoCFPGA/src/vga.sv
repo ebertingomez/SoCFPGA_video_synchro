@@ -83,7 +83,6 @@ assign  wshb_ifm.stb    = ~wfull;
 // Read-only
 assign  wshb_ifm.we     = 1'b0;
 assign  wshb_ifm.bte    = 2'b00;
-assign  wshb_ifm.cyc    = wshb_ifm.stb;
 assign  wshb_ifm.cti    = 3'b010;
 
 // CYC management
