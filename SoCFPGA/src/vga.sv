@@ -58,13 +58,14 @@ begin
         was_wfull       <= (was_wfull || new_wfull) ? 1'b1 : 1'b0;
 
         // Counters evolution
-        // We count pixels only if the FIFO was full once
+        // Once the FIFO was full for the first time, we start the counter for the screen.
+        // It means the we start to count the synchro bits.
         counterPixels   <= (counterPixels<HDISP+HFP+HPULSE+HBP-1 && was_wfull) ? counterPixels+1 : '0;
         counterLines    <= (counterLines<VDISP+VFP+VPULSE+VBP) ? counterLines+adder : '0;
         // Relative adder to line number
         adder           <= (counterPixels==HDISP+HFP+HPULSE+HBP-3) ? 1'b1 : 1'b0 ;
 
-        // management of Temporal synchronisation signals 
+        // management of signal of temporal synchronisation  
         video_ifm.HS    <= (HFP-1<=counterPixels && counterPixels<HFP+HPULSE-1)? 1'b0 : 1'b1;
         video_ifm.VS    <= (VFP<=counterLines && counterLines<VFP+VPULSE)? 1'b0 : 1'b1;
         video_ifm.BLANK <= (counterPixels == HDISP+HFP+HPULSE+HBP-1 || counterPixels< HFP+HPULSE+HBP-1 || counterLines< VFP+VPULSE+VBP) ? 1'b0 : 1'b1;        
@@ -92,7 +93,8 @@ begin
         {wshb_ifm.adr,counterSDRAM}    <= '0;
         
     end else begin
-        // Burst bus cycle Wishbone
+        // Burst bus cycle Wishbone. We handle the counter and the communication with the SDRAM
+        // Only if the strobe is active we increment the counter and the addr.
         if ( counterSDRAM + wshb_ifm.ack <  HDISP*VDISP) begin
             wshb_ifm.adr    <= (wshb_ifm.stb) ? wshb_ifm.adr + 4 * wshb_ifm.ack : wshb_ifm.adr;
             counterSDRAM    <= (wshb_ifm.stb) ? counterSDRAM + wshb_ifm.ack : counterSDRAM;
