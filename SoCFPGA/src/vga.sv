@@ -86,18 +86,20 @@ assign  wshb_ifm.bte    = 2'b00;
 assign  wshb_ifm.cti    = 3'b010;
 
 // CYC management
-enum logic { READING, WAIT } state;
+// A state machine was implemented to make the signal CYC wait until there are
+// 32 empty slots on the fifo and the fill them up.
+enum logic { WRITE, WAIT } state;
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst  ) begin
-        state           <= READING;
+        state           <= WRITE;
         wshb_ifm.cyc    <= 1'b1;
     end else begin
         case(state)
-            READING : if (wfull) state <= WAIT;
-            WAIT    : if (!walmost_full) state <= READING;
+            WRITE : if (wfull) state <= WAIT;
+            WAIT    : if (!walmost_full) state <= WRITE;
         endcase
-        if ( state == READING ) wshb_ifm.cyc    <= 1'b1;
+        if ( state == WRITE ) wshb_ifm.cyc    <= 1'b1;
         else if (state == WAIT) wshb_ifm.cyc    <= 1'b0;
     end
 end 
