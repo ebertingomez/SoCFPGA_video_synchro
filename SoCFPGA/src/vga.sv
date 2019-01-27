@@ -86,10 +86,20 @@ assign  wshb_ifm.bte    = 2'b00;
 assign  wshb_ifm.cti    = 3'b010;
 
 // CYC management
+enum logic { READING, WAIT } state;
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
-    if ( wshb_ifm.rst ) wshb_ifm.cyc    <= 1'b1;
-    else wshb_ifm.cyc <= (walmost_full && was_wfull) ? 1'b0 : 1'b1 ;
+    if ( wshb_ifm.rst  ) begin
+        state           <= READING;
+        wshb_ifm.cyc    <= 1'b1;
+    end else begin
+        case(state)
+            READING : if (wfull) state <= WAIT;
+            WAIT    : if (!walmost_full) state <= READING;
+        endcase
+        if ( state == READING ) wshb_ifm.cyc    <= 1'b1;
+        else if (state == WAIT) wshb_ifm.cyc    <= 1'b0;
+    end
 end 
 
 // Reading process on the SDRAM
