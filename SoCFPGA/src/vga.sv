@@ -83,10 +83,28 @@ assign  wshb_ifm.stb    = ~wfull;
 // Read-only
 assign  wshb_ifm.we     = 1'b0;
 assign  wshb_ifm.bte    = 2'b00;
-assign  wshb_ifm.cyc    = wshb_ifm.stb;
 assign  wshb_ifm.cti    = 3'b010;
 
+// CYC management
+// A state machine was implemented to make the signal CYC wait until there are
+// 32 empty slots on the fifo and the fill them up.
+enum logic { WRITE, WAIT } state;
+always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+begin
+    if ( wshb_ifm.rst  ) begin
+        state           <= WRITE;
+        wshb_ifm.cyc    <= 1'b1;
+    end else begin
+        case(state)
+            WRITE : if (wfull) state <= WAIT;
+            WAIT    : if (!walmost_full) state <= WRITE;
+        endcase
+        if ( state == WRITE ) wshb_ifm.cyc    <= 1'b1;
+        else if (state == WAIT) wshb_ifm.cyc    <= 1'b0;
+    end
+end 
 
+// Reading process on the SDRAM
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 begin
     if ( wshb_ifm.rst ) begin
@@ -104,10 +122,11 @@ begin
     end
 end
 
+
 // Writing on FIFO
 // Instanciation of ASYNC_FIFO
 assign write = wshb_ifm.ack & wshb_ifm.stb;
-async_fifo #(.DATA_WIDTH(24)) async_fifo_inst(
+async_fifo #(.DATA_WIDTH(24), .ALMOST_FULL_THRESHOLD(224)) async_fifo_inst(
     .rst    (wshb_ifm.rst),             // Reading reset
     .rclk   (pixel_clk),                // Reading clock. The same than the pixel
     .read   (read),                     // Read order

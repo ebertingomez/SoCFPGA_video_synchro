@@ -33,7 +33,8 @@ sys_pll  sys_pll_inst(
 //=============================
 //  Les bus Wishbone internes
 //=============================
-wshb_if #( .DATA_BYTES(4)) wshb_if_mire  (sys_clk, sys_rst);
+
+//wshb_if #( .DATA_BYTES(4)) wshb_if_mire  (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_vga  (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_sdram  (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_stream (sys_clk, sys_rst);
@@ -49,30 +50,6 @@ hw_support hw_support_inst (
     .SW_0     ( SW[0] ),
     .KEY      ( KEY )
  );
-
-//=============================
-// On neutralise l'interface
-// du flux video pour l'instant
-// A SUPPRIMER PLUS TARD
-//=============================
-assign wshb_if_stream.ack = 1'b1;
-assign wshb_if_stream.dat_sm = '0 ;
-assign wshb_if_stream.err =  1'b0 ;
-assign wshb_if_stream.rty =  1'b0 ;
-
-//=============================
-// On neutralise l'interface SDRAM
-// pour l'instant
-// A SUPPRIMER PLUS TARD
-//=============================
-// assign wshb_if_sdram.stb  = 1'b0;
-// assign wshb_if_sdram.cyc  = 1'b0;
-// assign wshb_if_sdram.we   = 1'b0;
-// assign wshb_if_sdram.adr  = '0  ;
-// assign wshb_if_sdram.dat_ms = '0 ;
-// assign wshb_if_sdram.sel = '0 ;
-// assign wshb_if_sdram.cti = '0 ;
-// assign wshb_if_sdram.bte = '0 ;
 
 //--------------------------
 //------- Code Eleves ------
@@ -126,12 +103,14 @@ vga #(.HDISP(HDISP), .VDISP(VDISP) ) vga_inst(
     .wshb_ifm       (wshb_if_vga.master) // Interface with the wishbone signals
 );
 
+/*
 mire #(.HDISP(HDISP), .VDISP(VDISP) ) mire_inst(
     .wshb_ifm       (wshb_if_mire.master) // Interface with the wishbone signals
 );
+*/
 
 wshb_intercon  wshb_intercon_inst(
-	.wshb_ifs_mire  (wshb_if_mire.slave), // Interface with the wishbone signals
+	.wshb_ifs_mire  (wshb_if_stream.slave), // Interface with the wishbone signals
     .wshb_ifs_vga   (wshb_if_vga.slave), // Interface with the wishbone signals
     .wshb_ifm       (wshb_if_sdram.master) // Interface with the wishbone signals
 );
